@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:grady/widgets/left_drawer.dart';
+import 'package:grady/itemlist_form.dart';
+
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
@@ -33,6 +36,7 @@ class MyHomePage extends StatelessWidget {
             .colorScheme
             .primary,
       ),
+      drawer: LeftDrawer(),
       // Body halaman dengan padding di sekelilingnya.
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -155,25 +159,32 @@ class ItemCard extends StatelessWidget {
       child: InkWell(
         // Aksi ketika kartu ditekan.
         onTap: () {
-          String message;
+          // Jika "Create Product" dipilih, redirect ke form page.
+          if (item.name == "Create Product") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ItemListFormPage(),
+              ),
+            );
+          } else {
+            String message;
 
-          switch (item.name) {
-            case "All Products":
-              message = "You have pressed the All Products button";
-              break;
-            case "My Products":
-              message = "You have pressed the My Products button";
-              break;
-            case "Create Product":
-              message = "You have pressed the Create Product button";
-              break;
-            default:
-              message = "no button";
+            switch (item.name) {
+              case "All Products":
+                message = "You have pressed the All Products button";
+                break;
+              case "My Products":
+                message = "You have pressed the My Products button";
+                break;
+              default:
+                message = "no button";
+            }
+
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(SnackBar(content: Text(message)));
           }
-
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(content: Text(message)));
         },
         // Container untuk menyimpan Icon dan Text
         child: Container(
