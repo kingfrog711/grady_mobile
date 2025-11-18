@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:grady/menu.dart';
+import 'package:grady/screens/menu.dart';
 import 'package:grady/itemlist_form.dart';
+import 'package:grady/screens/login.dart';
+import 'package:grady/screens/shop_list.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:grady/services/auth_service.dart';
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
@@ -63,7 +68,59 @@ class LeftDrawer extends StatelessWidget {
                 ),
               );
             },
-          )
+          ),
+          ListTile(
+            leading: const Icon(Icons.shopping_bag),
+            title: const Text('All Products'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ShopListPage(showMyItemsOnly: false),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.store),
+            title: const Text('My Products'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ShopListPage(showMyItemsOnly: true),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text('Logout'),
+            onTap: () async {
+              final request = context.read<CookieRequest>();
+              final response = await request.logout("http://localhost:8000/auth/logout/");
+              
+              // Clear stored username
+              await AuthService.clearUsername();
+              
+              if (response['status']) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(response['message']),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginPage(),
+                    ),
+                  );
+                }
+              }
+            },
+          ),
         ],
       ),
     );
